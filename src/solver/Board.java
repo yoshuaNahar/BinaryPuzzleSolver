@@ -28,7 +28,7 @@ public final class Board {
 	private final List<int[]> allRowPossibilities_GivenSize; //	All possibilities that are allowed, given the size and the row rules above
 	private final Map<Integer, List<int[]>> allPossibleRowsPerBoardRow_GivenBoardValues; // All possibilities per board row, given the starting board values
 
-	private boolean stopRecursion = false;
+	private boolean solutionFound = false;
 
 	public Board(int size) {
 		this.size = size;
@@ -57,7 +57,7 @@ public final class Board {
 
 	public void calculateBoardValues() {
 		findPossibleRowsPerBoardRow_GivenStartingPieces();
-		// printAllMatchingRows();
+		// printAllMatchingRows(); // Prints this hashmap allPossibleRowsPerBoardRow_GivenBoardValues
 
 		int allPossibilities = 1;
 		for (int i = 0; i < size; i++) {
@@ -71,14 +71,14 @@ public final class Board {
 		if (mapIndex == lists.size()) {
 			if (criteriaMet_Vertically()) {
 				printBoard();
-				stopRecursion = true;
+				solutionFound = true;
 			}
 			return;
 		}
 		for (int i = 0; i < lists.get(mapIndex).size(); i++) {
 			boardValues[mapIndex] = lists.get(mapIndex).get(i);
 			perfectBoardSolutions(lists, mapIndex + 1);
-			if (stopRecursion) {
+			if (solutionFound) {
 				return;
 			}
 		}
@@ -98,16 +98,16 @@ public final class Board {
 		for (int i = 0; i < size; i++) {
 			List<int[]> listOfMatchingRows = new LinkedList<>();
 			for (int[] array : allRowPossibilities_GivenSize) {
-				boolean match = true;
+				boolean isMatch = true;
 				for (int j = 0; j < size; j++) {
 					if (boardValues[i][j] != -1) {
 						if (boardValues[i][j] != array[j]) {
-							match = false;
+							isMatch = false;
 							break;
 						}
 					}
 				}
-				if (match) {
+				if (isMatch) {
 					listOfMatchingRows.add(array);
 				}
 			}
@@ -144,7 +144,6 @@ public final class Board {
 				}
 			}
 		}
-
 		// Vertical
 		for (int i = 0; i < size; i++) {
 			int[] tempBoardRowVertical = new int[size];
